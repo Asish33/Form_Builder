@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/Form";
 import Image from "next/image";
 
 export default function Home() {
   return <div>
-    <Button>Hi there</Button>
+    <Form></Form>
   </div>;
 }
