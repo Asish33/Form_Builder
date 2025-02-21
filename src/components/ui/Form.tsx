@@ -12,7 +12,7 @@ import { Button } from "./button";
 import { Textarea } from "@/components/ui/textarea";
 import { Gemini } from "@/config/gemini";
 
-async function main(input) {
+async function main(input:string) {
   const response = await Gemini(input); 
   return response;
 }
