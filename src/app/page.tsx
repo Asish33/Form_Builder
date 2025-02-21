@@ -1,9 +1,9 @@
-import { Form } from "@/components/ui/Form";
+import Link from "next/link";
 
 export default function Home() {
   return (
     <div>
-      <Form></Form>
+      <Link href="/login">Go to Login</Link>
     </div>
   );
 }
