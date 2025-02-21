@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { Form } from "@/components/ui/Form";
 
 export default function Dashboard() {
-  const [modal, setModal] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
 

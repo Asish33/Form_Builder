@@ -12,16 +12,45 @@ import { Button } from "./button";
 import { Textarea } from "@/components/ui/textarea";
 import { Gemini } from "@/config/gemini";
 
-
-
-async function main(input : string) {
-  await Gemini(input); 
+async function main(input) {
+  const response = await Gemini(input); 
+  return response;
 }
 
 export function Form() {
   const [data, setData] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const inputRef = useRef(null);
+
+  const handleSubmit = async () => {
+    if (data === "") {
+      alert("should not be empty");
+      return;
+    }
+
+    try {
+      const generatedJSON = await main(data);
+
+      const response = await fetch("/api/forms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ formData: generatedJSON }),
+      });
+
+      if (response.ok) {
+        alert("Form saved successfully");
+        setModalOpen(false);
+        setData("");
+      } else {
+        alert("Failed to save form");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("An error occurred");
+    }
+  };
 
   return (
     <Dialog open={modalOpen} onOpenChange={setModalOpen}>
@@ -48,18 +77,7 @@ export function Form() {
             />
           </DialogDescription>
         </DialogHeader>
-        <Button
-          onClick={() => {
-            if (data === "") {
-              alert("should not be empty");
-              return;
-            }
-            main(data);
-            setModalOpen(false);
-          }}
-        >
-          Submit
-        </Button>
+        <Button onClick={handleSubmit}>Submit</Button>
       </DialogContent>
     </Dialog>
   );
