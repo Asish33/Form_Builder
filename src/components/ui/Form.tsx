@@ -10,11 +10,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "./button";
 import { Textarea } from "@/components/ui/textarea";
-import { Gemini } from "@/config/gemini";
-
+import { AichatSession } from "@/config/gemini";
+const prompt = "On the basis of description please give form in json format with form title,form subheading with form haivng Form field,form name,placeholder name, and form label,fieldType, field required on Json format"
 async function main(input:string) {
-  const response = await Gemini(input); 
-  return response;
+  const result = await AichatSession.sendMessage("Description:"+input+prompt);
+  console.log(result.response.text()) 
+  return result.response.text();
 }
 
 export function Form() {

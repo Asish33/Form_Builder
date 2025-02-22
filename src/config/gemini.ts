@@ -3,14 +3,8 @@ const {
   HarmCategory,
   HarmBlockThreshold,
 } = require("@google/generative-ai");
-
-require("dotenv").config(); 
-
+require("dotenv").config();
 const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-if (!apiKey) {
-  throw new Error("Missing GEMINI_API_KEY in environment variables.");
-}
-
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
@@ -20,41 +14,31 @@ const model = genAI.getGenerativeModel({
 const generationConfig = {
   temperature: 1,
   topP: 0.95,
-  topK: 40,
+  topK: 64,
   maxOutputTokens: 8192,
-  responseMimeType: "text/plain",
+  responseMimeType: "application/json",
 };
+const safetySettings = [
+  {
+    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+];
 
-
-
-export async function Gemini( input : string) {
-  const chatSession = model.startChat({
-    generationConfig,
-    history: [
-      {
-        role: "user",
-        parts: [
-          {
-            text: "Give me the form with form title, form subheadings, form placeholders, and form labels for filling the form in JSON format. Add more common fields like full name, email, etc.",
-          },
-        ],
-      },
-      {
-        role: "model",
-        parts: [
-          {
-            text: "Okay, I'm ready. Please provide the data. I'll do my best to create a JSON form representation based on it. I will assume common fields like `FirstName`, `LastName`, `Email`, etc., unless the data suggests otherwise. Tell me what the data represents (e.g., a customer registration, a product order, etc.) for better context.",
-          },
-        ],
-      },
-    ],
-  });
-
-  const result = await chatSession.sendMessage(
-    input + " Don't give any other info, just JSON data , Directly.",
-  );
-
-  const responseText = await result.response.text(); 
-  console.log(responseText);
-  return responseText;
-}
+export const AichatSession = model.startChat({
+  generationConfig,
+  safetySettings,
+  history: [],
+});
