@@ -1,14 +1,13 @@
 "use client";
-
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Form } from "@/components/ui/Form";
 
 export default function Dashboard() {
-  const { data: session, status } = useSession();
+  const session = useSession();
   const router = useRouter();
-
+  const status = session.status
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
@@ -24,6 +23,11 @@ export default function Dashboard() {
         {JSON.stringify(session, null, 2)}
       </pre>
       <Form></Form>
+      <button onClick={()=>{
+        signOut({
+          callbackUrl: "/login", 
+        });
+      }}>signout</button>
     </div>
   );
 }

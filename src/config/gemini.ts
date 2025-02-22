@@ -51,7 +51,7 @@ export async function Gemini( input : string) {
   });
 
   const result = await chatSession.sendMessage(
-    input + " Don't give any other info, just JSON data.",
+    input + " Don't give any other info, just JSON data , Directly.",
   );
 
   const responseText = await result.response.text(); 

@@ -13,10 +13,14 @@ model User {
   firstName String
   lastName  String
   email     String @unique
+  Forms Form[]
 }
 
 model Form {
-  id       Int  @id @default(autoincrement())
-  content  Json
+  id      Int   @id @default(autoincrement())
+  content Json
+  user_id Int
+  user    User  @relation(fields: [user_id], references: [id])
 }
+
 
