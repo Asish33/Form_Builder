@@ -41,9 +41,29 @@ export function Formui({ json }: FormuiProps) {
     Record<number, string[]>
   >({});
 
-  const handleEdit = (index: number, newName: string) => {
-    const updatedFields = [...formFields];
-    updatedFields[index] = { ...updatedFields[index], fieldName: newName };
+  const handleEdit = async (id: number, newName: string) => {
+  try {
+    const res = await fetch("/api/form/update", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, fieldName: newName }),
+    });
+
+    if (res.ok) {
+      const updatedField = await res.json();
+      const updatedFields = formFields.map((field) =>
+        field.id === id ? { ...field, fieldName: updatedField.fieldName } : field
+      );
+      setFormFields(updatedFields);
+    }
+  } catch (error) {
+    console.error("Error updating field:", error);
+  }
+};
+
+  
+  const handleDelete = (index: number) => {
+    const updatedFields = formFields.filter((_, i) => i !== index);
     setFormFields(updatedFields);
   };
 
@@ -92,7 +112,7 @@ export function Formui({ json }: FormuiProps) {
 
       <div className="space-y-4 max-h-[500px] overflow-y-auto border p-3 rounded">
         {formFields.map((item, index) => (
-          <div key={index} className="w-full flex items-center">
+          <div key={index} className="w-full flex items-center space-x-2">
             {item.fieldType === "text" && (
               <div className="w-full">
                 <div>{item.fieldName}</div>
@@ -244,6 +264,7 @@ export function Formui({ json }: FormuiProps) {
                 </div>
               </div>
             )}
+
             <Edit
               item={item}
               change={(value) => handleEdit(index, value)}
