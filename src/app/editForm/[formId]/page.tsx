@@ -1,24 +1,39 @@
-import { PrismaClient } from "@prisma/client";
+"use client"
 
-const prisma = new PrismaClient();
+import { Formui } from "@/components/ui/formui";
+import { useState, useEffect } from "react";
 
-export default async function EditForm({
+export default function EditForm({
   params,
 }: {
-  params: { formId: string };
+  params: Promise<{ formId: string }>;
 }) {
-  const {formId} = await params;
-  const id = Number(formId);
+  const [form, setForm] = useState<any>(null);
 
-  const result = await prisma.form.findUnique({
-    where: {
-      id: id,
-    },
-  });
-  const ans = JSON.parse(result?.content as string);
-  console.log(ans)
-  console.log(ans.formTitle);
-  console.log(ans.formSubHeading);
-  console.log(ans.formFields);
-  return <div>form is </div>;
+  useEffect(() => {
+    async function fetchForm() {
+      const { formId } = await params; 
+      const response = await fetch(`/api/forms/${formId}`);
+      const data = await response.json();
+      console.log(data);
+      setForm(data);
+    }
+
+    fetchForm();
+  }, [params]);
+
+  if (!form) return <div>Loading...</div>;
+return (
+  <div className="flex h-screen p-4 gap-3">
+    <div className="bg-pink-200 rounded-md w-[30%] border-2 border-black flex justify-center items-center">
+      Control
+    </div>
+
+    <div className="w-[70%] border-2 border-black rounded-md  flex justify-center items-center">
+      <Formui json={form} />
+    </div>
+  </div>
+);
+
+
 }

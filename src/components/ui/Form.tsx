@@ -11,7 +11,7 @@ import {
 import { Button } from "./button";
 import { Textarea } from "@/components/ui/textarea";
 import { AichatSession } from "@/config/gemini";
-const prompt = "On the basis of description please give form in json format with form title,form subheading with form haivng Form field,form name,placeholder name, and form label,fieldType, field required all in Camel casing on Json format"
+const prompt = "On the basis of description please give form in json format with formTitle, formHeading along with ,fieldName, fieldTitle, FieldType, placeholder, label, requiredFields, fieldType, all in Camel casing on Json format without anything extra"
 async function main(input:string) {
   const result = await AichatSession.sendMessage("Description:"+input+prompt);
   console.log(result.response.text()) 
