@@ -8,37 +8,43 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
-type EditProps = {
-  item: any;
-  change: (value: string) => void;
-  deleteItem: () => void;
-};
-
-export default function Edit({ item, change, deleteItem }: EditProps) {
-  const [name, setName] = useState(item?.fieldName || "");
-
+export default function Edit({defaultValue,update}:{defaultValue:any,update:any}) {
+  const [label, setLabel]=useState(defaultValue.label);
+  const [placeholder, setPlaceholder]=useState(defaultValue.placeholder);
   return (
     <div className="flex gap-2 m-1">
-      
       <Popover>
         <PopoverTrigger>
           <Edit2 className="text-gray-600 cursor-pointer" />
         </PopoverTrigger>
         <PopoverContent>
           <div className="flex flex-col space-y-2">
+            <label>Title</label>
             <Input
-              onChange={(e) => setName(e.target.value)}
-              defaultValue={item?.fieldName}
-              placeholder="Edit name"
+              type="text"
+              defaultValue={defaultValue.label}
+              onChange={(e) => {
+                setLabel(e.target.value);
+              }}
             />
-            <Button onClick={() => change(name)} className="w-full">
-              Change
-            </Button>
+            <label>PlaceHolder</label>
+            <Input
+              type="text"
+              defaultValue={defaultValue.placeholder}
+              onChange={(e) => {
+                setPlaceholder(e.target.value);
+              }}
+            />
+            <Button className="w-full" onClick={()=>{
+              update({
+                label,
+                placeholder
+              })
+            }}>Change</Button>
           </div>
         </PopoverContent>
       </Popover>
 
-      
       <Popover>
         <PopoverTrigger>
           <LucideTrash2 className="text-red-900 cursor-pointer" />
@@ -46,12 +52,7 @@ export default function Edit({ item, change, deleteItem }: EditProps) {
         <PopoverContent>
           <div className="flex flex-col space-y-2">
             <p>Are you sure you want to delete this item?</p>
-            <Button
-              onClick={deleteItem}
-              className="bg-red-600 text-white w-full"
-            >
-              Delete
-            </Button>
+            <Button className="bg-red-600 text-white w-full">Delete</Button>
           </div>
         </PopoverContent>
       </Popover>

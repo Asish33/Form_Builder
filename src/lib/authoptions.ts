@@ -5,11 +5,8 @@ import NextAuth, {
   DefaultUser,
 } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaClient, User } from "@prisma/client";
-import { JWT } from "next-auth/jwt";
-
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-
 
 interface ExtendedUser extends User {
   id: number;

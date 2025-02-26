@@ -22,9 +22,10 @@ import Edit from "./Edit";
 
 type FormuiProps = {
   json: any;
+  update:any
 };
 
-export function Formui({ json }: FormuiProps) {
+export function Formui({ json,update }: FormuiProps) {
   const [formFields, setFormFields] = useState(json?.fields || []);
 
   const [ratings, setRatings] = useState<Record<number, number>>({});
@@ -41,31 +42,6 @@ export function Formui({ json }: FormuiProps) {
     Record<number, string[]>
   >({});
 
-  const handleEdit = async (id: number, newName: string) => {
-  try {
-    const res = await fetch("/api/form/update", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, fieldName: newName }),
-    });
-
-    if (res.ok) {
-      const updatedField = await res.json();
-      const updatedFields = formFields.map((field) =>
-        field.id === id ? { ...field, fieldName: updatedField.fieldName } : field
-      );
-      setFormFields(updatedFields);
-    }
-  } catch (error) {
-    console.error("Error updating field:", error);
-  }
-};
-
-  
-  const handleDelete = (index: number) => {
-    const updatedFields = formFields.filter((_, i) => i !== index);
-    setFormFields(updatedFields);
-  };
 
   const handleRating = (index: number, value: number) => {
     setRatings((prev) => ({ ...prev, [index]: value }));
@@ -111,11 +87,12 @@ export function Formui({ json }: FormuiProps) {
       </div>
 
       <div className="space-y-4 max-h-[500px] overflow-y-auto border p-3 rounded">
+        {/*@ts-ignore*/}
         {formFields.map((item, index) => (
           <div key={index} className="w-full flex items-center space-x-2">
             {item.fieldType === "text" && (
               <div className="w-full">
-                <div>{item.fieldName}</div>
+                <div>{item.label}</div>
                 <Input
                   type="text"
                   placeholder={item.placeholder}
@@ -127,7 +104,7 @@ export function Formui({ json }: FormuiProps) {
 
             {item.fieldType === "textarea" && (
               <div className="w-full">
-                <div>{item.fieldName}</div>
+                <div>{item.label}</div>
                 <Textarea
                   placeholder={item.placeholder}
                   name={item.name}
@@ -136,9 +113,29 @@ export function Formui({ json }: FormuiProps) {
               </div>
             )}
 
+            {item.fieldType === "dropdown" && (
+              <div className="w-full">
+                <div>{item.label}</div>
+                <Select
+                  onValueChange={(value) => handleTimeSelect(index, value)}
+                >
+                  <SelectTrigger className="w-full p-2 text-sm bg-white cursor-pointer">
+                    <SelectValue placeholder="Select an option" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    {item.options?.map((option: string, i: number) => (
+                      <SelectItem key={i} value={option} className="bg-white">
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             {item.fieldType === "email" && (
               <div className="w-full">
-                <div>{item.fieldName}</div>
+                <div>{item.label}</div>
                 <Input
                   type="email"
                   placeholder={item.placeholder}
@@ -150,7 +147,7 @@ export function Formui({ json }: FormuiProps) {
 
             {item.fieldType === "number" && (
               <div className="w-full">
-                <div>{item.fieldName}</div>
+                <div>{item.label}</div>
                 <Input
                   type="number"
                   placeholder={item.placeholder}
@@ -162,7 +159,7 @@ export function Formui({ json }: FormuiProps) {
 
             {item.fieldType === "rating" && (
               <div className="w-full">
-                <div>{item.fieldName}</div>
+                <div>{item.label}</div>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
@@ -181,7 +178,7 @@ export function Formui({ json }: FormuiProps) {
 
             {item.fieldType === "date" && (
               <div className="w-full">
-                <div>{item.fieldName}</div>
+                <div>{item.label}</div>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full text-left p-2">
@@ -204,7 +201,7 @@ export function Formui({ json }: FormuiProps) {
 
             {item.fieldType === "time" && (
               <div className="w-full">
-                <div>{item.fieldName}</div>
+                <div>{item.label}</div>
                 <Select
                   onValueChange={(value) => handleTimeSelect(index, value)}
                 >
@@ -224,7 +221,7 @@ export function Formui({ json }: FormuiProps) {
 
             {item.fieldType === "radio" && (
               <div className="w-full">
-                <div>{item.fieldName}</div>
+                <div>{item.label}</div>
                 <RadioGroup
                   value={selectedRadios[index] || ""}
                   onValueChange={(value) => handleRadioSelect(index, value)}
@@ -246,7 +243,7 @@ export function Formui({ json }: FormuiProps) {
 
             {item.fieldType === "checkbox" && (
               <div className="w-full">
-                <div>{item.fieldName}</div>
+                <div>{item.label}</div>
                 <div className="space-y-2">
                   {item.options?.map((option: string, i: number) => (
                     <div key={i} className="flex items-center space-x-2">
@@ -265,10 +262,8 @@ export function Formui({ json }: FormuiProps) {
               </div>
             )}
 
-            <Edit
-              item={item}
-              change={(value) => handleEdit(index, value)}
-              deleteItem={() => handleDelete(index)}
+            <Edit defaultValue={item} 
+            update={(value:string)=>update(value,index)}
             />
           </div>
         ))}

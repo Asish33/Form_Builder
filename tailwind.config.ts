@@ -10,6 +10,7 @@ export default {
   theme: {
   	extend: {
   		colors: {
+			rice:"#fef8ed",
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
