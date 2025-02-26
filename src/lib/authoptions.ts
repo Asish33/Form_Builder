@@ -1,9 +1,4 @@
 // /lib/authoptions.ts
-import NextAuth, {
-  NextAuthOptions,
-  DefaultSession,
-  DefaultUser,
-} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();

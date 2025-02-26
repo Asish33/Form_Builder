@@ -8,7 +8,7 @@ export async function POST(req:NextRequest) {
     const session =await  getServerSession(authOptions)
     console.log(session);
     const body = await req.json();
-    const user = await prisma.user.create({
+    await prisma.user.create({
         data:{
             password:body.password,
             email:body.email,
